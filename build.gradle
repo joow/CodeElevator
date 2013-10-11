@@ -4,6 +4,7 @@ apply plugin: 'idea'
 
 sourceCompatibility = '1.7'
 mainClassName = 'org.joow.codeelevator.CodeElevator'
+applicationName = 'CodeElevator'
 
 repositories() {
 	mavenCentral()
