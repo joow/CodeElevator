@@ -11,7 +11,7 @@ repositories() {
 }
 
 dependencies() {
-    compile 'org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016'
+    runtime 'javax.servlet:javax.servlet-api:3.0.1'
     compile 'com.sparkjava:spark-core:1.1'
     testCompile 'org.testng:testng:6.8.7'
 }
