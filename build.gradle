@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+sourceCompatibility = '1.7'
+mainClassName = 'org.joow.codeelevator.CodeElevator'
+
+repositories() {
+	mavenCentral()
+}
+
+dependencies() {
+    compile 'com.sparkjava:spark-core:1.1'
+    testCompile 'org.testng:testng:6.8.7'
+}
+
+task stage(dependsOn: ['clean', 'installApp'])

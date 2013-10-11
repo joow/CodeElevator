@@ -1,0 +1,6 @@
+.gradle/
+CodeElevator.iml
+CodeElevator.ipr
+CodeElevator.iws
+out/
+build/
