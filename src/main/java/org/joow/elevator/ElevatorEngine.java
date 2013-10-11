@@ -37,13 +37,18 @@ public final class ElevatorEngine {
 
     public String nextCommand() {
         if (commands.isEmpty()) {
-            return "NOTHING";
+            if (elevator.doorsAreOpened()) {
+                elevator = new Elevator(elevator.floor(), elevator.direction(), false);
+                return "CLOSE";
+            } else {
+                return "NOTHING";
+            }
         }
 
         final Command command = nextCommandToServe();
 
         if (command.floor() == elevator.floor()) {
-            commands.remove(command);
+            removeCommands(command.floor());
             elevator = new Elevator(elevator.floor(), elevator.direction(), !elevator.doorsAreOpened());
             if (elevator.doorsAreOpened()) {
                 return "OPEN";
@@ -72,6 +77,14 @@ public final class ElevatorEngine {
         }
 
         throw new IllegalStateException();
+    }
+
+    private void removeCommands(int floor) {
+        for (Iterator<Command> it = commands.iterator(); it.hasNext(); ) {
+            if (it.next().floor() == floor) {
+                it.remove();
+            }
+        }
     }
 
     public Command nextCommandToServe() {

@@ -128,7 +128,7 @@ public class ElevatorEngineTest {
         elevatorEngine.callAt(0, Direction.UP);
 
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
-        Assert.assertEquals("NOTHING", elevatorEngine.nextCommand());
+        Assert.assertEquals("CLOSE", elevatorEngine.nextCommand());
     }
 
     public void callFromOtherDirectionOnSameFloor() {
@@ -250,7 +250,7 @@ public class ElevatorEngineTest {
         Assert.assertEquals("DOWN", elevatorEngine.nextCommand());
         Assert.assertEquals("DOWN", elevatorEngine.nextCommand());
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
-        Assert.assertEquals("NOTHING", elevatorEngine.nextCommand());
+        Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
     }
 
     public void scenario3() {
@@ -417,5 +417,31 @@ public class ElevatorEngineTest {
 
         elevatorEngine.callAt(0, Direction.UP);
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
+    }
+
+    public void scenario5() {
+        final ElevatorEngine elevatorEngine = new ElevatorEngine();
+
+        elevatorEngine.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
+
+        elevatorEngine.callAt(0, Direction.UP);
+        elevatorEngine.go(1);
+        elevatorEngine.go(2);
+
+        Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
+
+        elevatorEngine.callAt(1, Direction.DOWN);
+        Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
+
+        elevatorEngine.go(0);
+        Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
     }
 }
