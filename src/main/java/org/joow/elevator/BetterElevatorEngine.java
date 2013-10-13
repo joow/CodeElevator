@@ -29,6 +29,10 @@ public class BetterElevatorEngine extends ElevatorEngine {
     }
 
     public void callAt(final int floorAt, Direction to) {
+        if (floorAlreadyInNextCommands(floorAt)) {
+            return;
+        }
+
         if (elevatorIsNotAvailable(floorAt, to)) {
             final Command command = new Command(floorAt, to, false);
 
@@ -51,6 +55,16 @@ public class BetterElevatorEngine extends ElevatorEngine {
                 waitingCommands.add(command);
             }
         }
+    }
+
+    private boolean floorAlreadyInNextCommands(final int floorAt) {
+        for (Command nextCommand : nextCommands) {
+            if (floorAt == nextCommand.floor()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean elevatorIsNotAvailable(final int floorAt, final Direction to) {
