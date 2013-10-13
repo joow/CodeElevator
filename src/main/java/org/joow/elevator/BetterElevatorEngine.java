@@ -31,7 +31,21 @@ public class BetterElevatorEngine extends ElevatorEngine {
     public void callAt(final int floorAt, Direction to) {
         if (elevatorIsNotAvailable(floorAt, to)) {
             final Command command = new Command(floorAt, to, false);
-            if (command.direction() == this.target && currentDirection.isAhead(floorAt, floor)) {
+
+            if (currentDirection.isAhead(floorAt, floor) || (to == target && target.isAhead(floorAt, floor))) {
+                if (target != command.direction()) {
+                    target = command.direction();
+                    final List<Command> waitingCommandsForTarget = new ArrayList<>();
+                    waitingCommandsForTarget.addAll(getCommandsByTarget());
+
+                    for (final Command waitingCommandForTarget : waitingCommandsForTarget) {
+                        if (target.isAhead(waitingCommandForTarget.floor(), floor)) {
+                            nextCommands.add(waitingCommandForTarget);
+                            waitingCommands.remove(waitingCommandForTarget);
+                        }
+                    }
+                }
+
                 nextCommands.add(command);
             } else {
                 waitingCommands.add(command);
@@ -74,11 +88,6 @@ public class BetterElevatorEngine extends ElevatorEngine {
                 }
             }
 
-            /*if (command.isGo()) {
-                target = command.direction();
-            }
-            */
-
             if (DoorState.isOpened(doorState)) {
                 doorState = DoorState.CLOSED;
                 return "CLOSE";
@@ -99,6 +108,9 @@ public class BetterElevatorEngine extends ElevatorEngine {
             if (DoorState.isOpened(doorState)) {
                 doorState = DoorState.CLOSED;
                 return "CLOSE";
+            } else if (floor > 0) {
+                floor --;
+                return "DOWN";
             }
 
             return "NOTHING";

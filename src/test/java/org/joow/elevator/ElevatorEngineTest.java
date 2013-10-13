@@ -21,7 +21,6 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void callFromFloor2ElevatorAtFloor0() {
@@ -32,7 +31,6 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void callFromFloor3ElevatorAtFloor0() {
@@ -44,7 +42,6 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void callFromFloor4ElevatorAtFloor0() {
@@ -57,7 +54,6 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void callFromFloor5ElevatorAtFloor0() {
@@ -71,7 +67,6 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void callFromFloor0ElevatorAtFloor5() {
@@ -194,7 +189,6 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void scenario1() {
@@ -448,15 +442,15 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
     }
 
     public void shouldTakeCallsToSameDirectionFirst() {
-        final ElevatorEngine elevatorEngine = new BetterElevatorEngine(1, Direction.DOWN);
+        final ElevatorEngine elevatorEngine = new BetterElevatorEngine(2, Direction.DOWN);
 
         elevatorEngine.callAt(0, Direction.UP);
         elevatorEngine.callAt(1, Direction.UP);
 
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
@@ -472,6 +466,25 @@ public class ElevatorEngineTest {
         Assert.assertEquals(elevatorEngine.nextCommand(), "UP");
         Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
         Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
-        Assert.assertEquals(elevatorEngine.nextCommand(), "NOTHING");
+    }
+
+    public void shouldTakeCallToDownWhenAtUpperLevel() {
+        final ElevatorEngine elevatorEngine = new BetterElevatorEngine(5, Direction.DOWN);
+
+        elevatorEngine.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+
+        elevatorEngine.callAt(1, Direction.DOWN);
+
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
+
+        elevatorEngine.go(0);
+        Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "DOWN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "OPEN");
+        Assert.assertEquals(elevatorEngine.nextCommand(), "CLOSE");
     }
 }
