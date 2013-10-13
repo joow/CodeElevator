@@ -22,4 +22,12 @@ public enum Direction {
             return NONE;
         }
     }
+
+    public boolean isAhead(final int commandFloor, final int elevatorFloor) {
+        if (this == UP) {
+            return commandFloor >= elevatorFloor;
+        } else {
+            return commandFloor <= elevatorFloor;
+        }
+    }
 }

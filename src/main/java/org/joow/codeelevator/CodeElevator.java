@@ -1,5 +1,6 @@
 package org.joow.codeelevator;
 
+import org.joow.elevator.BetterElevatorEngine;
 import org.joow.elevator.Direction;
 import org.joow.elevator.ElevatorEngine;
 import static spark.Spark.*;
@@ -11,7 +12,7 @@ public class CodeElevator {
     public static void main(String[] args) {
         setPort(getPort());
 
-        final ElevatorEngine elevatorEngine = new ElevatorEngine();
+        final ElevatorEngine elevatorEngine = new BetterElevatorEngine();
 
         get(new Route("/call") {
             @Override

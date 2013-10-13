@@ -2,7 +2,7 @@ package org.joow.elevator;
 
 import java.util.*;
 
-public final class ElevatorEngine {
+public class ElevatorEngine {
     private Elevator elevator = new Elevator(0, Direction.NONE, false);
 
     private Direction target = Direction.NONE;
@@ -92,7 +92,7 @@ public final class ElevatorEngine {
 
         if (commandsToServe.isEmpty()) {
             target = Direction.inverseOf(target);
-            elevator = new Elevator(elevator.floor(), Direction.NONE, elevator.doorsAreOpened());
+            elevator = new Elevator(elevator.floor(), target, elevator.doorsAreOpened());
             commandsToServe = filterCommands();
         }
 
@@ -121,9 +121,11 @@ public final class ElevatorEngine {
             if (command.direction() == target) {
                 if (elevator.direction() == Direction.NONE || command.isGo()) {
                     filtered.add(command);
-                } else if ((elevator.direction() == Direction.UP) && (command.floor() >= elevator.floor())) {
+                } else if (command.isGo()) {
                     filtered.add(command);
-                } else if ((elevator.direction() == Direction.DOWN && (command.floor() <= elevator.floor()))) {
+                } else if ((elevator.direction() == Direction.UP) && (command.floor() > elevator.floor())) {
+                    filtered.add(command);
+                } else if ((elevator.direction() == Direction.DOWN && (command.floor() < elevator.floor()))) {
                     filtered.add(command);
                 }
             }
