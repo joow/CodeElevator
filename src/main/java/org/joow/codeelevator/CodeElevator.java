@@ -1,5 +1,6 @@
 package org.joow.codeelevator;
 
+import com.google.common.base.Optional;
 import org.joow.elevator.BetterElevatorEngine;
 import org.joow.elevator.Direction;
 import org.joow.elevator.ElevatorEngine;
@@ -7,10 +8,11 @@ import static spark.Spark.*;
 import spark.*;
 
 public class CodeElevator {
-    private static final int DEFAULT_PORT = 9000;
+    private static final String DEFAULT_PORT = "9000";
 
     public static void main(String[] args) {
-        setPort(getPort());
+        final String port = Optional.of(System.getenv("PORT")).or(DEFAULT_PORT);
+        setPort(Integer.valueOf(port));
 
         final ElevatorEngine elevatorEngine = new BetterElevatorEngine();
 
@@ -64,15 +66,5 @@ public class CodeElevator {
                 return elevatorEngine.nextCommand();
             }
         });
-    }
-
-    private static int getPort() {
-        String port = System.getenv("PORT");
-
-        if (port == null) {
-            return DEFAULT_PORT;
-        }
-
-        return Integer.valueOf(port);
     }
 }
