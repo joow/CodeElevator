@@ -11,8 +11,8 @@ public class CodeElevator {
     private static final String DEFAULT_PORT = "9000";
 
     public static void main(String[] args) {
-        final String port = Optional.of(System.getenv("PORT")).or(DEFAULT_PORT);
-        setPort(Integer.valueOf(port));
+        final int port = Integer.valueOf(Optional.of(System.getenv("PORT")).or(DEFAULT_PORT));
+        setPort(port);
 
         final ElevatorEngine elevatorEngine = new BetterElevatorEngine();
 
