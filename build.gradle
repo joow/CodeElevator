@@ -7,7 +7,11 @@ mainClassName = 'org.joow.codeelevator.CodeElevator'
 applicationName = 'CodeElevator'
 
 repositories() {
-	mavenCentral()
+    maven {
+        name = 'heroku-proxy'
+        url = "http://s3pository.heroku.com/jvm"
+    }
+    mavenCentral()
 }
 
 dependencies() {
@@ -18,3 +22,7 @@ dependencies() {
 }
 
 task stage(dependsOn: ['clean', 'installApp'])
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.8'
+}
