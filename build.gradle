@@ -7,10 +7,6 @@ mainClassName = 'org.joow.codeelevator.CodeElevator'
 applicationName = 'CodeElevator'
 
 repositories() {
-    maven {
-        name = 'heroku-proxy'
-        url = "http://s3pository.heroku.com/jvm"
-    }
     mavenCentral()
 }
 
