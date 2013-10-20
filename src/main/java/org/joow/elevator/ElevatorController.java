@@ -16,8 +16,6 @@ public class ElevatorController {
 
     private SortedSet<Action> nextActions = new TreeSet<>();
 
-    private SortedSet<Action> waitingActions = new TreeSet<>();
-
     public ElevatorController() {
         this(new Cab(), Direction.UP);
     }
@@ -33,12 +31,7 @@ public class ElevatorController {
 
     public void callAt(final int atFloor, final Direction to) {
         final Action action = new Action(atFloor, to);
-
-        if (to == destination && isAhead(atFloor, destination)) {
-            nextActions.add(action);
-        } else {
-            waitingActions.add(action);
-        }
+        nextActions.add(action);
     }
 
     public boolean isAhead(final int floor, final Direction direction) {
@@ -58,7 +51,6 @@ public class ElevatorController {
         cab = new Cab();
         destination = Direction.UP;
         nextActions.clear();
-        waitingActions.clear();
     }
 
     public Command nextCommand() {
@@ -71,7 +63,7 @@ public class ElevatorController {
                 if (cab.areDoorsOpened()) {
                     return cab.closeDoors();
                 } else {
-                    removeAction(nextAction);
+                    nextActions.remove(nextAction);
                     return cab.openDoors();
                 }
             }
@@ -89,38 +81,34 @@ public class ElevatorController {
         return Command.NOTHING;
     }
 
-    private void removeAction(final Action action) {
-        nextActions.remove(action);
-        waitingActions.remove(action);
-    }
-
     private Optional<Action> nextAction() {
         if (nextActions.isEmpty()) {
-            if (waitingActions.isEmpty()) {
-                return Optional.absent();
-            }
-
-            final Direction invertedDestination = Direction.inverseOf(destination);
-            final Action nextAction = nextActionByDestination(waitingActions, invertedDestination);
-
-            if (nextAction.floor() > cab.floor() && destination == Direction.DOWN) {
-                destination = invertedDestination;
-                nextActions.addAll(Sets.newTreeSet(Collections2.filter(waitingActions,
-                        Predicates.and(new ActionDirectionPredicate(invertedDestination),
-                                new ActionAheadPredicate(invertedDestination)))));
-                waitingActions.removeAll(nextActions);
-            } else if (nextAction.floor() < cab.floor() && destination == Direction.UP) {
-                destination = invertedDestination;
-                nextActions.addAll(Sets.newTreeSet(Collections2.filter(waitingActions,
-                        Predicates.and(new ActionDirectionPredicate(invertedDestination),
-                                new ActionAheadPredicate(invertedDestination)))));
-                waitingActions.removeAll(nextActions);
-            }
-
-            return Optional.of(nextAction);
+            return Optional.absent();
         }
 
-        return Optional.of(nextActionByDestination(nextActions, destination));
+        SortedSet<Action> filteredActions = Sets.newTreeSet(Collections2.filter(nextActions,
+                Predicates.and(new ActionAheadPredicate(destination), new ActionDirectionPredicate(destination))));
+
+        if (filteredActions.isEmpty()) {
+            final Direction invertedDestination = Direction.inverseOf(destination);
+            filteredActions = Sets.newTreeSet(Collections2.filter(nextActions,
+                    new ActionDirectionPredicate(invertedDestination)));
+
+            if (filteredActions.isEmpty()) {
+                filteredActions = Sets.newTreeSet(Collections2.filter(nextActions,
+                        new ActionDirectionPredicate(destination)));
+            }
+        }
+
+        final Action nextAction = nextActionByDestination(filteredActions, filteredActions.first().direction());
+
+        if (nextAction.floor() > cab.floor() && destination == Direction.DOWN) {
+            destination = Direction.inverseOf(destination);
+        } else if (nextAction.floor() < cab.floor() && destination == Direction.UP) {
+            destination = Direction.inverseOf(destination);
+        }
+
+        return Optional.of(nextAction);
     }
 
     private Action nextActionByDestination(final SortedSet<Action> actions, final Direction destination) {
