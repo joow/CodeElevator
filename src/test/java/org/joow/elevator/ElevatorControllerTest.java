@@ -3,6 +3,12 @@ package org.joow.elevator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Test
 public class ElevatorControllerTest {
     public void shouldDoNothingWhenNoCommand() {
@@ -472,80 +478,234 @@ public class ElevatorControllerTest {
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
     }
 
-    public void shouldReopenItsDoorWhenCalledAgainFromSameFloor() {
+    public void scenario7() {
         final ElevatorController elevatorController = new ElevatorController();
 
         elevatorController.callAt(0, Direction.UP);
+        elevatorController.callAt(0, Direction.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(3);
+
+        elevatorController.go(3);
+        elevatorController.callAt(0, Direction.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
 
         elevatorController.go(1);
-        elevatorController.callAt(0, Direction.UP);
-
-        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(1);
+
+        elevatorController.go(3);
+
+        elevatorController.go(5);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(3, Direction.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(0);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
 
         elevatorController.go(2);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-    }
-
-    public void shouldTakeFurthestCaller() {
-        final ElevatorController elevatorController = new ElevatorController(new Cab.Builder().at(5).build(), Direction.DOWN);
-
-        elevatorController.callAt(0, Direction.UP);
-        elevatorController.callAt(4, Direction.UP);
-
-        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
 
         elevatorController.go(5);
-
-        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        elevatorController.callAt(3, Direction.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
         Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-
-        elevatorController.go(5);
-
-        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-    }
-
-    public void shouldTakeCallsToSameDirectionFirst() {
-        final ElevatorController elevatorController = new ElevatorController(new Cab.Builder().at(2).build(), Direction.DOWN);
 
         elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(3, Direction.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(0);
+
+        elevatorController.go(0);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(1);
+
         elevatorController.callAt(1, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
 
+        elevatorController.go(5);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(5);
+
+        elevatorController.callAt(3, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(5);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(5);
+
+        elevatorController.go(3);
+
+        elevatorController.go(1);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
 
-        elevatorController.go(2);
+        elevatorController.callAt(4, Direction.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
 
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(0);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(4);
+
+        elevatorController.go(3);
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(1);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(2, Direction.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+    }
+
+    public void scenario8() {
+        final ElevatorController elevatorController = new ElevatorController();
+
+        elevatorController.callAt(0, Direction.UP);
+        elevatorController.callAt(0, Direction.UP);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(4);
+        elevatorController.go(3);
+        elevatorController.callAt(0, Direction.UP);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.go(1);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(2, Direction.DOWN);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
+
+        elevatorController.callAt(0, Direction.UP);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
         Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-
-        elevatorController.go(2);
-
-        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
     }
 
     public void shouldTakeCallToDownWhenAtUpperLevel() {
@@ -599,5 +759,37 @@ public class ElevatorControllerTest {
 
         Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+    }
+
+    @Test(enabled = false)
+    public void shouldSupportMultipleCallers() throws InterruptedException {
+        final ElevatorController elevatorController = new ElevatorController();
+        final ExecutorService executorService = Executors.newCachedThreadPool();
+
+        final Callable<Command> nextCommandCaller = new Callable<Command>() {
+            @Override
+            public Command call() {
+                return elevatorController.nextCommand();
+            }
+        };
+
+        final Callable<Void> actionCaller = new Callable<Void>() {
+            @Override
+            public Void call() {
+                elevatorController.callAt(0, Direction.UP);
+                return null;
+            }
+        };
+
+        final List<Callable<Command>> callables1 = new ArrayList<>(10000);
+        final List<Callable<Void>> callables2 = new ArrayList<>(10000);
+        for (int i = 0; i < 10000; i++) {
+            callables1.add(nextCommandCaller);
+            callables2.add(actionCaller);
+        }
+
+        executorService.invokeAll(callables1);
+        executorService.invokeAll(callables2);
+        executorService.shutdown();
     }
 }

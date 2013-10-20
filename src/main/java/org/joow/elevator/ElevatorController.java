@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import java.util.SortedSet;
@@ -14,7 +15,7 @@ public class ElevatorController {
 
     private Direction destination;
 
-    private SortedSet<Action> nextActions = new TreeSet<>();
+    private final SortedSet<Action> nextActions = new TreeSet<>();
 
     public ElevatorController() {
         this(new Cab(), Direction.UP);
@@ -31,7 +32,10 @@ public class ElevatorController {
 
     public void callAt(final int atFloor, final Direction to) {
         final Action action = new Action(atFloor, to);
-        nextActions.add(action);
+
+        synchronized (nextActions) {
+            nextActions.add(action);
+        }
     }
 
     public boolean isAhead(final int floor, final Direction direction) {
@@ -63,7 +67,9 @@ public class ElevatorController {
                 if (cab.areDoorsOpened()) {
                     return cab.closeDoors();
                 } else {
-                    nextActions.remove(nextAction);
+                    synchronized (nextActions) {
+                        nextActions.remove(nextAction);
+                    }
                     return cab.openDoors();
                 }
             }
@@ -82,20 +88,22 @@ public class ElevatorController {
     }
 
     private Optional<Action> nextAction() {
-        if (nextActions.isEmpty()) {
+        final ImmutableSet<Action> currentActions = copyOfNextActions();
+
+        if (currentActions.isEmpty()) {
             return Optional.absent();
         }
 
-        SortedSet<Action> filteredActions = Sets.newTreeSet(Collections2.filter(nextActions,
+        SortedSet<Action> filteredActions = Sets.newTreeSet(Collections2.filter(currentActions,
                 Predicates.and(new ActionAheadPredicate(destination), new ActionDirectionPredicate(destination))));
 
         if (filteredActions.isEmpty()) {
             final Direction invertedDestination = Direction.inverseOf(destination);
-            filteredActions = Sets.newTreeSet(Collections2.filter(nextActions,
+            filteredActions = Sets.newTreeSet(Collections2.filter(currentActions,
                     new ActionDirectionPredicate(invertedDestination)));
 
             if (filteredActions.isEmpty()) {
-                filteredActions = Sets.newTreeSet(Collections2.filter(nextActions,
+                filteredActions = Sets.newTreeSet(Collections2.filter(currentActions,
                         new ActionDirectionPredicate(destination)));
             }
         }
@@ -109,6 +117,12 @@ public class ElevatorController {
         }
 
         return Optional.of(nextAction);
+    }
+
+    private ImmutableSet<Action> copyOfNextActions() {
+        synchronized (nextActions) {
+            return ImmutableSet.copyOf(nextActions);
+        }
     }
 
     private Action nextActionByDestination(final SortedSet<Action> actions, final Direction destination) {
