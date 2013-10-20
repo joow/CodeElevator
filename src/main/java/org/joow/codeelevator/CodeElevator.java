@@ -3,6 +3,7 @@ package org.joow.codeelevator;
 import com.google.common.base.Optional;
 import static spark.Spark.*;
 
+import org.joow.elevator.CountdownWaitStrategy;
 import org.joow.elevator.Direction;
 import org.joow.elevator.ElevatorController;
 import spark.*;
@@ -14,7 +15,7 @@ public class CodeElevator {
         final int port = Integer.valueOf(Optional.fromNullable(System.getenv("PORT")).or(DEFAULT_PORT));
         setPort(port);
 
-        final ElevatorController elevatorController = new ElevatorController();
+        final ElevatorController elevatorController = new ElevatorController(new CountdownWaitStrategy());
 
         get(new Route("/call") {
             @Override
@@ -40,6 +41,7 @@ public class CodeElevator {
         get(new Route("/userHasEntered") {
             @Override
             public Object handle(Request request, Response response) {
+                elevatorController.userHasEntered();
                 return "";
             }
         });
@@ -47,6 +49,7 @@ public class CodeElevator {
         get(new Route("/userHasExited") {
             @Override
             public Object handle(Request request, Response response) {
+                elevatorController.userHasExited();
                 return "";
             }
         });

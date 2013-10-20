@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ElevatorController {
     private Cab cab;
@@ -16,6 +17,15 @@ public class ElevatorController {
     private Direction destination;
 
     private final SortedSet<Action> nextActions = new TreeSet<>();
+
+    private WaitStrategy waitStrategy = new WaitStrategy() {
+        @Override
+        public boolean shouldWait(final Cab cab, final int nbActionsQueued) {
+            return false;
+        }
+    };
+
+    private final AtomicInteger nbUsersWaiting = new AtomicInteger();
 
     public ElevatorController() {
         this(new Cab(), Direction.UP);
@@ -30,7 +40,13 @@ public class ElevatorController {
         this.destination = destination;
     }
 
+    public ElevatorController(WaitStrategy waitStrategy) {
+        this();
+        this.waitStrategy = waitStrategy;
+    }
+
     public void callAt(final int atFloor, final Direction to) {
+        nbUsersWaiting.incrementAndGet();
         final Action action = new Action(atFloor, to);
 
         synchronized (nextActions) {
@@ -57,6 +73,14 @@ public class ElevatorController {
         nextActions.clear();
     }
 
+    public void userHasEntered() {
+        nbUsersWaiting.decrementAndGet();
+    }
+
+    public void userHasExited() {
+        nbUsersWaiting.decrementAndGet();
+    }
+
     public Command nextCommand() {
         final Optional<Action> optionalNextAction = nextAction();
 
@@ -77,6 +101,11 @@ public class ElevatorController {
             if (cab.areDoorsOpened()) {
                 return cab.closeDoors();
             }
+
+            if (waitStrategy.shouldWait(cab, nbUsersWaiting.get())) {
+                return Command.NOTHING;
+            }
+
             return cab.moveTo(nextAction.floor());
         }
 

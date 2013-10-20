@@ -806,4 +806,44 @@ public class ElevatorControllerTest {
         executorService.invokeAll(callables2);
         executorService.shutdown();
     }
+
+    public void shouldWaitTwoTimeWhenAtLowestFloorWithOneCommandQueued() {
+        final ElevatorController elevatorController = new ElevatorController(new CountdownWaitStrategy());
+
+        elevatorController.callAt(1, Direction.UP);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+    }
+
+    public void shouldWaitOneTimeWhenAtLowestFloorWithTwoCommandsQueued() {
+        final ElevatorController elevatorController = new ElevatorController(new CountdownWaitStrategy());
+
+        elevatorController.callAt(1, Direction.UP);
+        elevatorController.callAt(2, Direction.UP);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+    }
+
+    public void shouldTakeQueuedCommandInAccountWhenWaiting() {
+        final ElevatorController elevatorController = new ElevatorController(new CountdownWaitStrategy());
+
+        elevatorController.callAt(1, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
+
+        elevatorController.callAt(2, Direction.UP);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+    }
+
+    public void shouldNotWaitWhenTooMuchCommandsQueued() {
+        final ElevatorController elevatorController = new ElevatorController(new CountdownWaitStrategy());
+
+        elevatorController.callAt(1, Direction.UP);
+        elevatorController.callAt(2, Direction.UP);
+        elevatorController.callAt(2, Direction.UP);
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
+    }
 }
