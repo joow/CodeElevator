@@ -79,7 +79,6 @@ public class ElevatorControllerTest {
         Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
     }
 
     public void callFromFloor5ToUpElevatorAtFloor0() {
@@ -93,7 +92,6 @@ public class ElevatorControllerTest {
         Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
     }
 
     public void callFromFloor0ElevatorAtFloor5() {
@@ -125,7 +123,6 @@ public class ElevatorControllerTest {
         Assert.assertEquals(elevatorController.nextCommand(), Command.UP);
         Assert.assertEquals(elevatorController.nextCommand(), Command.OPEN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.CLOSE);
-        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
     }
 
     public void callFromFloor1ToUpElevatorAtFloorAndGoToFloor5WithCallsFromLowerFloor() {
@@ -759,6 +756,23 @@ public class ElevatorControllerTest {
 
         Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
         Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+    }
+
+    public void shouldDoNothingIfAtFloor0AndNothingToDo() {
+        final ElevatorController elevatorController = new ElevatorController();
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
+    }
+
+    public void shouldGoBackToFloor0IfNothingElseToDo() {
+        final ElevatorController elevatorController = new ElevatorController(new Cab.Builder().at(5).build());
+
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.DOWN);
+        Assert.assertEquals(elevatorController.nextCommand(), Command.NOTHING);
     }
 
     @Test(enabled = false)

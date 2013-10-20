@@ -82,6 +82,8 @@ public class ElevatorController {
 
         if (cab.areDoorsOpened()) {
             return cab.closeDoors();
+        } else if (cab.floor() > 0) {
+            return cab.moveTo(0);
         }
 
         return Command.NOTHING;
