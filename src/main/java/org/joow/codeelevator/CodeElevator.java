@@ -1,27 +1,30 @@
 package org.joow.codeelevator;
 
 import com.google.common.base.Optional;
-import org.joow.elevator.BetterElevatorEngine;
-import org.joow.elevator.Direction;
-import org.joow.elevator.ElevatorEngine;
 import static spark.Spark.*;
+
+import org.joow.elevator.Direction;
+import org.joow.elevator.ElevatorController;
 import spark.*;
 
 public class CodeElevator {
     private static final String DEFAULT_PORT = "9000";
 
+    private static String lastCall;
+
     public static void main(String[] args) {
-        final int port = Integer.valueOf(Optional.of(System.getenv("PORT")).or(DEFAULT_PORT));
+        final int port = Integer.valueOf(Optional.fromNullable(System.getenv("PORT")).or(DEFAULT_PORT));
         setPort(port);
 
-        final ElevatorEngine elevatorEngine = new BetterElevatorEngine();
+        final ElevatorController elevatorController = new ElevatorController();
 
         get(new Route("/call") {
             @Override
             public Object handle(Request request, Response response) {
+                lastCall = request.url() + " " + request.queryString();
                 final int atFloor = Integer.parseInt(request.queryParams("atFloor"));
                 final Direction to = Direction.of(request.queryParams("to"));
-                elevatorEngine.callAt(atFloor, to);
+                elevatorController.callAt(atFloor, to);
 
                 return "";
             }
@@ -30,8 +33,9 @@ public class CodeElevator {
         get(new Route("/go") {
             @Override
             public Object handle(Request request, Response response) {
+                lastCall = request.url() + " " + request.queryString();
                 final int floorToGo = Integer.parseInt(request.queryParams("floorToGo"));
-                elevatorEngine.go(floorToGo);
+                elevatorController.go(floorToGo);
 
                 return "";
             }
@@ -40,6 +44,7 @@ public class CodeElevator {
         get(new Route("/userHasEntered") {
             @Override
             public Object handle(Request request, Response response) {
+                lastCall = request.url() + " " + request.queryString();
                 return "";
             }
         });
@@ -47,6 +52,7 @@ public class CodeElevator {
         get(new Route("/userHasExited") {
             @Override
             public Object handle(Request request, Response response) {
+                lastCall = request.url() + " " + request.queryString();
                 return "";
             }
         });
@@ -54,7 +60,8 @@ public class CodeElevator {
         get(new Route("/reset") {
             @Override
             public Object handle(Request request, Response response) {
-                elevatorEngine.reset();
+                lastCall = request.url() + " " + request.queryString();
+                elevatorController.reset();
 
                 return "";
             }
@@ -63,8 +70,13 @@ public class CodeElevator {
         get(new Route("/nextCommand") {
             @Override
             public Object handle(Request request, Response response) {
-                return elevatorEngine.nextCommand();
+                System.out.println(getLastCall());
+                return elevatorController.nextCommand().toString();
             }
         });
+    }
+
+    private static String getLastCall() {
+        return lastCall;
     }
 }

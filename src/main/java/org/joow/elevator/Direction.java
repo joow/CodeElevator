@@ -1,33 +1,23 @@
 package org.joow.elevator;
 
 public enum Direction {
-    UP, DOWN, NONE;
+    UP, DOWN;
 
-    public static Direction of(String directionString) {
+    public static Direction of(final String to) {
         for (final Direction direction : values()) {
-            if (direction.toString().equalsIgnoreCase(directionString)) {
+            if (direction.toString().equalsIgnoreCase(to)) {
                 return direction;
             }
         }
 
-        throw new IllegalArgumentException(directionString + " is not a known direction.");
+        throw new IllegalArgumentException(String.format("%s is not a valid direction !", to));
     }
 
-    public static Direction inverseOf(Direction direction) {
+    public static Direction inverseOf(final Direction direction) {
         if (direction == UP) {
             return DOWN;
-        } else if (direction == DOWN) {
+        } else {
             return UP;
-        } else {
-            return NONE;
-        }
-    }
-
-    public boolean isAhead(final int commandFloor, final int elevatorFloor) {
-        if (this == UP) {
-            return commandFloor >= elevatorFloor;
-        } else {
-            return commandFloor <= elevatorFloor;
         }
     }
 }
