@@ -10,8 +10,6 @@ import spark.*;
 public class CodeElevator {
     private static final String DEFAULT_PORT = "9000";
 
-    private static String lastCall;
-
     public static void main(String[] args) {
         final int port = Integer.valueOf(Optional.fromNullable(System.getenv("PORT")).or(DEFAULT_PORT));
         setPort(port);
@@ -21,7 +19,6 @@ public class CodeElevator {
         get(new Route("/call") {
             @Override
             public Object handle(Request request, Response response) {
-                lastCall = request.url() + " " + request.queryString();
                 final int atFloor = Integer.parseInt(request.queryParams("atFloor"));
                 final Direction to = Direction.of(request.queryParams("to"));
                 elevatorController.callAt(atFloor, to);
@@ -33,7 +30,6 @@ public class CodeElevator {
         get(new Route("/go") {
             @Override
             public Object handle(Request request, Response response) {
-                lastCall = request.url() + " " + request.queryString();
                 final int floorToGo = Integer.parseInt(request.queryParams("floorToGo"));
                 elevatorController.go(floorToGo);
 
@@ -44,7 +40,6 @@ public class CodeElevator {
         get(new Route("/userHasEntered") {
             @Override
             public Object handle(Request request, Response response) {
-                lastCall = request.url() + " " + request.queryString();
                 return "";
             }
         });
@@ -52,7 +47,6 @@ public class CodeElevator {
         get(new Route("/userHasExited") {
             @Override
             public Object handle(Request request, Response response) {
-                lastCall = request.url() + " " + request.queryString();
                 return "";
             }
         });
@@ -60,7 +54,6 @@ public class CodeElevator {
         get(new Route("/reset") {
             @Override
             public Object handle(Request request, Response response) {
-                lastCall = request.url() + " " + request.queryString();
                 elevatorController.reset();
 
                 return "";
@@ -70,13 +63,14 @@ public class CodeElevator {
         get(new Route("/nextCommand") {
             @Override
             public Object handle(Request request, Response response) {
-                System.out.println(getLastCall());
-                return elevatorController.nextCommand().toString();
+                try {
+                    return elevatorController.nextCommand().toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return "";
             }
         });
-    }
-
-    private static String getLastCall() {
-        return lastCall;
     }
 }
