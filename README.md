@@ -1,5 +1,5 @@
 # Code-Story : Elevator
-Implementation of an elevator for the [Code-Story](http://www.code-story.net/blog/posts/s03e01) contest.
+Implementation of an elevator algorithm for the [Code-Story](http://www.code-story.net/blog/posts/s03e01) contest.
 
 ## Usage
 To start the server on the default port (9000) :  
