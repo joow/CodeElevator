@@ -91,4 +91,13 @@ public class PathTest {
 
         Assert.assertEquals(path.cost(), Integer.valueOf(12));
     }
+
+    public void computeCostOfFiveCalls() {
+        final List actions = Arrays.asList(new Call(0, Direction.UP), new Call(0, Direction.UP),
+                new Call(1, Direction.UP), new Call(3, Direction.DOWN), new Call(4, Direction.DOWN));
+
+        final Path path = new Path(actions, new Cabin());
+
+        Assert.assertEquals(path.cost(), Integer.valueOf(10));
+    }
 }
