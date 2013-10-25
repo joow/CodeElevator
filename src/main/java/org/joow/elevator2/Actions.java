@@ -8,19 +8,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Actions {
-    public final List<Action> actions = new CopyOnWriteArrayList<>();
+    private final List<Action> actions = new CopyOnWriteArrayList<>();
 
     public void add(final Action action) {
         actions.add(action);
     }
 
     public void remove(final Action action) {
-        actions.removeAll(Collections2.filter(actions, new Predicate<Action>() {
-            @Override
-            public boolean apply(final Action input) {
-                return input.floor() == action.floor();
-            }
-        }));
+        actions.removeAll(Collections2.filter(actions, new FloorPredicate(action.floor())));
     }
 
     public void clear() {
