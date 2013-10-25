@@ -92,9 +92,46 @@ public class PathTest {
         Assert.assertEquals(path.cost(), Integer.valueOf(12));
     }
 
+    public void computeCostOfTwoCalls() {
+        final List actions = Arrays.asList(new Call(0, Direction.UP), new Call(1, Direction.UP));
+
+        final Path path = new Path(actions, new Cabin());
+
+        Assert.assertEquals(path.cost(), Integer.valueOf(10));
+    }
+
+    public void computeCostOfThreeCalls() {
+        final List actions = Arrays.asList(new Call(0, Direction.UP), new Call(0, Direction.UP), new Call(1, Direction.UP));
+
+        final Path path = new Path(actions, new Cabin());
+
+        Assert.assertEquals(path.cost(), Integer.valueOf(10));
+    }
+
+    public void computeCostOfFourCalls() {
+        final List actions = Arrays.asList(new Call(0, Direction.UP), new Call(0, Direction.UP),
+                new Call(1, Direction.UP), new Call(3, Direction.DOWN));
+
+        final Path path = new Path(actions, new Cabin());
+
+        Assert.assertEquals(path.cost(), Integer.valueOf(10));
+    }
+
+    public static void main(String[] args) {
+        final List actions = Arrays.asList(new Go(0, Direction.UP), new Go(1, Direction.UP), new Call(2, Direction.UP),
+                new Call(3, Direction.DOWN));
+
+        System.out.println("Started...");
+        final Long start = System.currentTimeMillis();
+
+        Paths.bestPath(actions, new Cabin());
+
+        System.out.println(String.format("Done in %d ms.", System.currentTimeMillis() - start));
+    }
+
     public void computeCostOfFiveCalls() {
         final List actions = Arrays.asList(new Call(0, Direction.UP), new Call(0, Direction.UP),
-                new Call(1, Direction.UP), new Call(3, Direction.DOWN), new Call(4, Direction.DOWN));
+                new Call(1, Direction.UP), new Call(3, Direction.DOWN), new Call(4, Direction.DOWN), new Call(5, Direction.DOWN));
 
         final Path path = new Path(actions, new Cabin());
 

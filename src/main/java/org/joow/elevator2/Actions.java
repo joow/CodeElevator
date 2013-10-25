@@ -26,7 +26,7 @@ public class Actions {
         if (actions.isEmpty()) {
             return Optional.absent();
         } else {
-            return Optional.of(Paths.getBestPath(actions, cabin).first());
+            return Optional.of(Paths.bestPath(actions, cabin).first());
         }
     }
 }

@@ -2,19 +2,23 @@ package org.joow.elevator2;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.RecursiveTask;
 
 public class Paths {
     private Paths() {}
 
-    public static Path getBestPath(final List<Action> actions, final Cabin cabin) {
+    public static Path bestPath(final List<Action> actions, final Cabin cabin) {
         final Collection<List<Action>> permutations = Collections2.permutations(actions);
-        final List<Path> paths = ImmutableList.copyOf(Collections2.transform(permutations, new Function<List<Action>, Path>() {
+        final List<Path> paths = new ArrayList<>(Collections2.transform(permutations, new Function<List<Action>, Path>() {
             @Override
             public Path apply(final List<Action> permutation) {
+                //final PathCreator pathCreator = new PathCreator(permutation, cabin);
+                //Path.FORK_JOIN_POOL.invoke(pathCreator);
+                //return pathCreator.join();
                 return new Path(permutation, cabin);
             }
         }));
@@ -35,6 +39,22 @@ public class Paths {
             return path1;
         } else {
             return path2;
+        }
+    }
+
+    private static class PathCreator extends RecursiveTask<Path> {
+        private final List<Action> actions;
+
+        private final Cabin cabin;
+
+        public PathCreator(final List actions, final Cabin cabin) {
+            this.actions = actions;
+            this.cabin = cabin;
+        }
+
+        @Override
+        protected Path compute() {
+            return new Path(actions, cabin);
         }
     }
 }
