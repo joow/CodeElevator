@@ -2,14 +2,12 @@ package org.joow.elevator2;
 
 import org.joow.elevator.DoorState;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Cabin {
     private final Integer floor;
 
     private final DoorState doorState;
 
-    private final AtomicInteger move;
+    private final Integer move;
 
     public Cabin() {
         this(0);
@@ -26,7 +24,7 @@ public class Cabin {
     public Cabin(final int floor, final DoorState doorState, final Integer move) {
         this.floor = floor;
         this.doorState = doorState;
-        this.move = new AtomicInteger(move);
+        this.move = move;
     }
 
     public Integer floor() {
@@ -38,7 +36,7 @@ public class Cabin {
     }
 
     public Integer move() {
-        return move.get();
+        return move;
     }
 
     public Cabin moveTo(final int toFloor) {
