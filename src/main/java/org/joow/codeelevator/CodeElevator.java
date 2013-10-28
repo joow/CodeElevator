@@ -3,8 +3,8 @@ package org.joow.codeelevator;
 import com.google.common.base.Optional;
 import static spark.Spark.*;
 
-import org.joow.elevator.Direction;
-import org.joow.elevator.ElevatorController;
+import org.joow.elevator2.Direction;
+import org.joow.elevator2.ElevatorController;
 import spark.*;
 
 public class CodeElevator {

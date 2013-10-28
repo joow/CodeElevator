@@ -118,15 +118,21 @@ public class PathTest {
     }
 
     public static void main(String[] args) {
-        final List actions = Arrays.asList(new Go(0, Direction.UP), new Go(1, Direction.UP), new Call(2, Direction.UP),
-                new Call(3, Direction.DOWN));
+        //final List calls = Arrays.asList(new Call(0, Direction.UP), new Call(1, Direction.UP), new Call(2, Direction.UP), new Call(3, Direction.DOWN));
+        final List calls = Arrays.asList(new Call(3, Direction.DOWN), new Call(2, Direction.UP),
+                new Call(1, Direction.UP), new Call(0, Direction.UP), new Call(0, Direction.DOWN), new Call(5, Direction.DOWN));
+
+        final List gos = Arrays.asList(new Go(0, Direction.UP), new Go(1, Direction.UP), new Go(2, Direction.UP),
+                new Go(3, Direction.DOWN), new Go(4, Direction.DOWN));
 
         System.out.println("Started...");
         final Long start = System.currentTimeMillis();
 
-        Paths.bestPath(actions, new Cabin());
+        System.out.println(Paths.bestPath(calls, new Cabin()).first().floor());
 
         System.out.println(String.format("Done in %d ms.", System.currentTimeMillis() - start));
+
+        System.out.println(String.format("%d paths in cache !", Paths.PATHS_CACHE.size()));
     }
 
     public void computeCostOfFiveCalls() {

@@ -33,7 +33,7 @@ public class PathCalculator extends RecursiveTask<Integer> {
         final List<Action> remainingActions = replaceServedActions(cabinAtRequestedFloor.floor(), cabinAtRequestedFloor.move());
         final Integer costServedActions = cost(servedActions, cabinAtRequestedFloor.move());
 
-        if (nextAction.isFinal()) {
+        if (nextAction.isFinal() || remainingActions.size() == 1) {
             return costServedActions + new PathCalculator(remainingActions, cabinAtRequestedFloor.openDoors()).compute();
         } else {
             return costServedActions + Paths.bestPath(remainingActions, cabinAtRequestedFloor.openDoors()).cost();
